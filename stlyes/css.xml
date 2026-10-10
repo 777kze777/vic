@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <Module>
 <ModulePrefs title="Classroom Resources" />
 <Content type="html"><![CDATA[
@@ -8,6 +8,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Unblocked Games G+</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InMiIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj4KPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZlMjU5Ii8+PHN0b3Agb2Zmc2V0PSIuNDUiIHN0b3AtY29sb3I9IiNmZjdlYjMiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNjODZiZmYiLz4KPC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJrIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzJiMTE0MCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzEzMDcxZiIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+CjxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgcng9IjEyIiBmaWxsPSJ1cmwoI2spIi8+CjxjaXJjbGUgY3g9IjMyIiBjeT0iMzAiIHI9IjE3IiBmaWxsPSJ1cmwoI3MpIi8+CjxnIGZpbGw9IiMxMzA3MWYiIG9wYWNpdHk9Ii44NSI+CjxyZWN0IHg9IjE0IiB5PSIzMCIgd2lkdGg9IjM2IiBoZWlnaHQ9IjIuNCIvPjxyZWN0IHg9IjE0IiB5PSIzNSIgd2lkdGg9IjM2IiBoZWlnaHQ9IjMiLz48cmVjdCB4PSIxNCIgeT0iNDEiIHdpZHRoPSIzNiIgaGVpZ2h0PSIzLjYiLz4KPC9nPgo8cGF0aCBkPSJNMzAgNTIgQzMwIDQyIDMxIDM2IDMzIDMxIGwzIC45IGMtMiA1IC0zIDExIC0zIDIwIHoiIGZpbGw9IiMwZDA0MTYiLz4KPGcgZmlsbD0iIzBkMDQxNiI+CjxwYXRoIGQ9Ik0zMy41IDMxLjUgYy02LTUtMTItNi0xNi0zIDUtMSAxMCAxIDE0IDV6Ii8+CjxwYXRoIGQ9Ik0zMy41IDMxLjUgYzYtNSAxMi02IDE2LTMgLTUtMS0xMCAxLTE0IDV6Ii8+CjxwYXRoIGQ9Ik0zMy41IDMxIGMtMy03LTgtMTEtMTMtMTEgNSAyIDkgNiAxMSAxMnoiLz4KPHBhdGggZD0iTTMzLjUgMzEgYzMtNyA4LTExIDEzLTExIC01IDIgLTkgNiAtMTEgMTJ6Ii8+CjxwYXRoIGQ9Ik0zMy41IDMwLjUgYzAtNiAyLTExIDUtMTQgLTEgNSAtMiAxMCAtMiAxNXoiLz4KPC9nPgo8L3N2Zz4="/>
 <style>
   html, body { margin: 0; height: 100%; background: #000; color: #e8e8f0; font: 15px/1.4 system-ui, sans-serif; overflow: hidden; }
@@ -335,7 +336,7 @@ window.GAME_U = function (name) {
 
 <script>
 (function () {
-  var faked = false, target = null, realDesc = null;
+  var faked = false, target = null, realDesc = null, plDenied = false;
   try { realDesc = Object.getOwnPropertyDescriptor(Document.prototype, "pointerLockElement"); } catch (e) {}
 
   function realLocked() {
@@ -367,13 +368,14 @@ window.GAME_U = function (name) {
   var realRPL = Element.prototype.requestPointerLock;
   Element.prototype.requestPointerLock = function () {
     var el = this, ok = false;
+    if (plDenied) { fakeLock(el); return; }
     try {
       var r = realRPL ? realRPL.apply(el, arguments) : undefined;
       if (r && typeof r.then === "function") {
-        r.then(function () { ok = true; }).catch(function () { if (!ok) fakeLock(el); });
+        r.then(function () { ok = true; }).catch(function () { if (!ok) { plDenied = true; fakeLock(el); } });
       }
-    } catch (e) { fakeLock(el); return; }
-    setTimeout(function () { if (!realLocked() && !faked) fakeLock(el); }, 160);
+    } catch (e) { plDenied = true; fakeLock(el); return; }
+    setTimeout(function () { if (!realLocked() && !faked) { plDenied = true; fakeLock(el); } }, 160);
   };
 
   var realEPL = document.exitPointerLock;
@@ -424,6 +426,19 @@ window.GAME_U = function (name) {
   }).observe(document.getElementById('canvas'), { attributes: true, attributeFilter: ['style'] });
 
   var gameLang = 'en', fatalShown = false;
+  function flagOn(q, key) {
+    try { if (new RegExp('[?&]' + q + '=1').test(location.search)) return true; } catch (e) {}
+    try { return localStorage.getItem(key) === '1'; } catch (e) { return false; }
+  }
+  var DEBUG = flagOn('debug', 'vc_debug');
+  var LOG_MAX = 500, logRing = [], logTotal = 0;
+  function ringPush(tag, t) {
+    logTotal++;
+    if (logRing.length >= LOG_MAX) logRing.shift();
+    logRing.push(tag + String(t).slice(0, 280));
+  }
+  window.__log = function (n) { return logRing.slice(-(n || LOG_MAX)).join('\n'); };
+  window.__logInfo = function () { return { kept: logRing.length, total: logTotal, debug: DEBUG }; };
   function fatal(e) {
     var t = String(e && (e.stack || e.message) || e);
     console.error('FATAL: ' + t);
@@ -474,7 +489,11 @@ window.GAME_U = function (name) {
   var pauseBy = { hidden: document.hidden, blur: false, ad: false }, audioCtxs = [];
   (function () {
     var AC = window.AudioContext || window.webkitAudioContext; if (!AC || AC.reVCWrapped) return;
-    function Wrapped(o) { var c = o === undefined ? new AC() : new AC(o); audioCtxs.push(c); return c; }
+    function Wrapped(o) {
+      var c = o === undefined ? new AC() : new AC(o);
+      if (audioCtxs.indexOf(c) < 0) { audioCtxs.push(c); if (audioCtxs.length > 8) audioCtxs.shift(); }
+      return c;
+    }
     Wrapped.prototype = AC.prototype; Wrapped.reVCWrapped = true;
     window.AudioContext = Wrapped; if (window.webkitAudioContext) window.webkitAudioContext = Wrapped;
   })();
@@ -535,16 +554,19 @@ window.GAME_U = function (name) {
   function creep(to, sec) { if (to > sliderNow() + 0.002) sliderSet(to, sec); }
   function sliderRestart() { sliderSet(0, 0); void moverEl.offsetWidth; }
 
-  var lastPct = -1;
-  (function pctLoop() {
+  var lastPct = -1, pctRAF = 0;
+  function pctTick() {
+    pctRAF = requestAnimationFrame(pctTick);
     var p = Math.round(sliderNow() * 100);
     if (p !== lastPct) {
       lastPct = p;
       if (pctNumEl) pctNumEl.textContent = p + '%';
       if (pctLeftEl) pctLeftEl.textContent = p >= 100 ? 'Starting the game' : (100 - p) + '% remaining';
     }
-    requestAnimationFrame(pctLoop);
-  })();
+  }
+  function pctStart() { if (!pctRAF) pctTick(); }
+  function pctStop() { if (pctRAF) { cancelAnimationFrame(pctRAF); pctRAF = 0; } }
+  pctStart();
   function showErr(t) { console.warn(t); }
 
   var Module = {
@@ -555,14 +577,15 @@ window.GAME_U = function (name) {
     reVCLoading: function () { gameLoadStep(); },
     reVCLoadStart: function () { loadSteps = 0; showGameLoading(); },
     reVCLoadEnd: function () { hideGameLoading(); },
-    print: function (t) { console.log(t); trackState(t); },
-    printErr: function (t) { console.warn(t); },
-    setStatus: function (t) { if (t) console.log('status: ' + t); },
+    print: function (t) { if (DEBUG) console.log(t); else ringPush('', t); trackState(t); },
+    printErr: function (t) { if (DEBUG) console.warn(t); else ringPush('! ', t); },
+    setStatus: function (t) { if (t && DEBUG) console.log('status: ' + t); },
     instantiateWasm: function (imports, done) { return fixVideoModes(imports, done); },
     onAbort: function (what) { fatal('Aborted(' + what + ')'); },
     onRuntimeInitialized: function () {
       gameStarted = true;
       sliderSet(1, .35); overlay.classList.add('done'); fitCanvas(); Module.canvas.focus();
+      setTimeout(pctStop, 700);
       setTimeout(function () { overlay.style.display = 'none'; }, 600);
       ysdkCall(function (f) {
         if (f.LoadingAPI) f.LoadingAPI.ready();
@@ -588,7 +611,7 @@ window.GAME_U = function (name) {
   var CACHE_DB = 'gplus_assets', CACHE_STORE = 'files', CACHE_VER = 1;
   var CACHE_TTL = 30 * 24 * 60 * 60 * 1000;
   var CACHE_MIN_FREE = 320 * 1024 * 1024;
-  var cacheOn = !/[?&]nocache=1/.test(location.search);
+  var cacheOn = !flagOn('nocache', 'vc_nocache');
   var cacheHits = 0, cacheMiss = 0, dbPromise = null;
 
   try {
@@ -896,6 +919,7 @@ window.GAME_U = function (name) {
 
   var gameState = '', loadSteps = 0, LOAD_STEPS = 95;
   function trackState(t) {
+    if (!t || typeof t !== 'string' || t.indexOf('gGameState') < 0) return;
     var m = /gGameState = (GS_\w+)/.exec(t); if (!m) return;
     gameState = m[1];
     if (gameState === 'GS_INIT_PLAYING_GAME') { loadSteps = 0; showGameLoading(); }
@@ -910,11 +934,14 @@ window.GAME_U = function (name) {
   }
   function showGameLoading() {
     overlay.style.display = 'flex'; overlay.classList.remove('done');
-    sliderRestart(); creep(0.88, 12);
+    sliderRestart(); creep(0.88, 12); pctStart();
   }
   function hideGameLoading() {
     sliderSet(1, .35); overlay.classList.add('done'); Module.canvas.focus();
-    setTimeout(function () { if (overlay.classList.contains('done')) overlay.style.display = 'none'; }, 600);
+    setTimeout(function () {
+      pctStop();
+      if (overlay.classList.contains('done')) overlay.style.display = 'none';
+    }, 600);
   }
 
   function injectScript(src, url, next) {
@@ -946,6 +973,13 @@ window.GAME_U = function (name) {
       gameLang = lang;
       return lang;
     });
+  }
+
+  if (DEBUG) {
+    setInterval(function () {
+      var m = window.performance && performance.memory;
+      if (m) console.log('[heap] ' + (m.usedJSHeapSize / 1048576 | 0) + ' / ' + (m.jsHeapSizeLimit / 1048576 | 0) + ' MiB');
+    }, 30000);
   }
 
   function startGame() {
@@ -1013,7 +1047,7 @@ window.GAME_U = function (name) {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   #ad-iframe::-webkit-scrollbar {
     display: none;
     width: 0;
@@ -1132,6 +1166,7 @@ window.GAME_U = function (name) {
     });
   })();
 </script>
+
 </body>
 </html>
 
